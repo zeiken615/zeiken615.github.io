@@ -12,6 +12,10 @@
   --head: 64px;
   --ease: cubic-bezier(.2, .7, .1, 1);
   --sans: 'Inter Tight', 'Noto Sans KR', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+  --serif: 'Noto Serif KR', 'AppleMyungjo', serif;
+  --num: 'Cormorant Garamond', 'Noto Serif KR', serif;
+  --math: 'STIX Two Text', 'Times New Roman', serif;
+  --red: #b3261e;
   --kr: 'Noto Sans KR', 'Inter Tight', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
 }
 
@@ -22,6 +26,7 @@ body.no-scroll, body.menu-open { overflow: hidden; }
 a { color: inherit; text-decoration: none; }
 h1, h2, h3, p { margin: 0; }
 h1, h2, h3 { font-weight: 300; letter-spacing: -0.03em; line-height: 1.25; }
+.page-head h1, .hero-title, .statement-text, .split-text h2, .teacher h2, .closing h2, .quote, .story h2, .lesson-now h2 { font-family: var(--serif); font-weight: 300; }
 button, input, select, textarea { font: inherit; color: inherit; }
 svg { display: block; max-width: 100%; }
 ::selection { background: var(--ink); color: #fff; }
@@ -119,7 +124,7 @@ body:not([data-page="home"]) main { padding-top: var(--head); }
 @keyframes draw-in { to { stroke-dashoffset: 0; } }
 @keyframes fade-in { to { opacity: 1; } }
 .hero-text { position: absolute; left: var(--gutter); bottom: 72px; right: var(--gutter); }
-.hero-title { font-size: clamp(40px, 6.6vw, 96px); font-weight: 300; letter-spacing: -0.045em; line-height: 1.12; margin: 22px 0 36px; }
+.hero-title { font-size: clamp(40px, 6.4vw, 92px); font-weight: 300; letter-spacing: -0.04em; line-height: 1.12; margin: 22px 0 36px; }
 .hero-title span { display: block; }
 .hero-in { opacity: 0; transform: translateY(24px); animation: rise 1.3s var(--ease) var(--d, 0s) forwards; }
 @keyframes rise { to { opacity: 1; transform: none; } }
@@ -128,6 +133,64 @@ body:not([data-page="home"]) main { padding-top: var(--head); }
 /* ---------- 홈: 문장 ---------- */
 .statement { padding: 168px var(--gutter); display: grid; grid-template-columns: 1fr 2fr; gap: 40px; }
 .statement-text { font-size: clamp(24px, 3vw, 40px); font-weight: 300; line-height: 1.5; letter-spacing: -0.03em; max-width: 880px; }
+
+/* ---------- 홈: 틀린 문제 하나가 해결되기까지 (스크롤 이야기) ---------- */
+.story { position: relative; height: 520vh; border-top: 1px solid var(--line); }
+.story-pin { position: sticky; top: 0; height: 100vh; display: grid; grid-template-columns: 1fr 1.15fr; gap: 72px; align-items: center; padding: var(--head) var(--gutter) 0; overflow: hidden; }
+.story-text h2 { font-size: clamp(30px, 3.4vw, 50px); margin: 18px 0 40px; }
+.story-steps { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line); }
+.story-steps li { display: grid; grid-template-columns: 44px 1fr; padding: 14px 0; border-bottom: 1px solid var(--line); opacity: .25; transition: opacity .6s var(--ease); }
+.story-steps h3 { font-size: 17px; font-weight: 400; letter-spacing: -0.02em; }
+.story-steps p { font-size: 13px; color: var(--ink-2); max-height: 0; opacity: 0; overflow: hidden; transition: max-height .7s var(--ease), opacity .7s var(--ease), margin .7s var(--ease); }
+.story-steps .num { padding-top: 4px; }
+.story[data-step="1"] li[data-i="1"], .story[data-step="2"] li[data-i="2"], .story[data-step="3"] li[data-i="3"], .story[data-step="4"] li[data-i="4"], .story[data-step="5"] li[data-i="5"] { opacity: 1; }
+.story[data-step="1"] li[data-i="1"] p, .story[data-step="2"] li[data-i="2"] p, .story[data-step="3"] li[data-i="3"] p, .story[data-step="4"] li[data-i="4"] p, .story[data-step="5"] li[data-i="5"] p { max-height: 90px; opacity: 1; margin-top: 6px; }
+.story-bar { position: relative; height: 1px; background: var(--line); margin-top: 32px; }
+.story-bar i { position: absolute; left: 0; top: 0; bottom: 0; width: calc(var(--p, 0) * 100%); background: var(--ink); }
+.story-stage { position: relative; height: min(72vh, 640px); background: var(--stone); }
+.card { position: absolute; inset: 8% 9%; background: #fff; box-shadow: 0 40px 80px -40px rgba(0, 0, 0, .25); padding: 36px 40px; display: flex; flex-direction: column; gap: 22px; overflow: hidden; opacity: 0; transform: translateY(48px) scale(.97); transition: opacity .8s var(--ease), transform 1s var(--ease); pointer-events: none; }
+.card.in { opacity: 1; transform: none; pointer-events: auto; }
+.card header { display: flex; justify-content: space-between; gap: 12px; padding-bottom: 12px; border-bottom: 1px solid var(--ink); }
+.card header .label + .label { color: var(--ink-3); }
+.prob { font-family: var(--serif); font-size: 18px; line-height: 2; }
+.math { font-family: var(--math); font-size: 1.04em; line-height: 1; white-space: nowrap; }
+.math i { font-style: italic; }
+.math sup { font-size: .62em; vertical-align: .55em; line-height: 0; }
+.work { display: grid; gap: 6px; padding-left: 22px; border-left: 1px solid var(--line); font-size: 21px; }
+.ans { display: inline-flex; align-items: baseline; gap: 20px; width: max-content; margin-top: 8px; font-size: 15px; }
+.ans-num { position: relative; display: inline-block; font-size: 22px; padding: 0 6px; }
+.pen { position: absolute; max-width: none; fill: none; stroke: var(--red); stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; overflow: visible; }
+.pen path { stroke-dasharray: 1; stroke-dashoffset: 1; transition: stroke-dashoffset .6s var(--ease) .55s; }
+.card.in .pen path { stroke-dashoffset: 0; }
+.pen-slash { width: 64px; height: 64px; left: 50%; top: 50%; transform: translate(-45%, -55%); }
+.pen-circle { width: 56px; height: 50px; left: 50%; top: 50%; transform: translate(-50%, -52%); }
+.mark-sign { display: inline-block; padding: 0 .12em; border-radius: 50%; transition: color .6s, box-shadow .6s; }
+.hl { background: linear-gradient(var(--red), var(--red)) no-repeat 0 92% / 0% 1.5px; transition: background-size .8s var(--ease) .2s; }
+.anno { display: grid; gap: 8px; padding-top: 16px; border-top: 1px dashed var(--line); font-size: 14px; opacity: 0; transform: translateY(12px); transition: opacity .7s var(--ease) .3s, transform .7s var(--ease) .3s; }
+.anno b { display: inline-block; min-width: 78px; font-weight: 500; color: var(--red); }
+.story[data-step="2"] .mark-sign { color: var(--red); box-shadow: 0 0 0 1.5px var(--red); }
+.story[data-step="2"] .hl { background-size: 100% 1.5px; }
+.story[data-step="2"] .anno { opacity: 1; transform: none; }
+.note-dl { margin: 0; }
+.note-dl div { display: grid; grid-template-columns: 92px 1fr; gap: 12px; padding: 16px 0; border-bottom: 1px solid var(--line); font-size: 14px; }
+.note-dl dt { font-family: var(--kr); font-size: 12px; color: var(--ink-3); padding-top: 2px; }
+.note-dl dd { margin: 0; }
+.retry { display: grid; gap: 6px; }
+.retry span { display: flex; justify-content: space-between; max-width: 260px; }
+.retry em { font-style: normal; color: var(--ink-3); }
+.retry em.x { color: var(--red); }
+.retry em.o { color: var(--ink); font-weight: 500; }
+.card .chart { margin: 4px 0 0; }
+.card-comment { font-size: 14px; color: var(--ink-2); line-height: 1.9; border-top: 1px solid var(--line); padding-top: 16px; }
+
+/* ---------- 홈: 검은 바탕 큰 숫자 ---------- */
+.dark { background: var(--ink); color: #fff; padding: 150px var(--gutter) 130px; text-align: center; }
+.dark .label { color: rgba(255, 255, 255, .6); }
+.big-num { font-family: var(--num); font-feature-settings: 'lnum' 1; font-weight: 300; font-size: clamp(110px, 21vw, 330px); line-height: .9; letter-spacing: -0.03em; display: flex; justify-content: center; align-items: center; gap: .1em; margin: 48px 0 36px; font-variant-numeric: lining-nums tabular-nums; }
+.big-arrow { font-size: .36em; color: rgba(255, 255, 255, .4); }
+.dark-cap { color: rgba(255, 255, 255, .6); font-size: 14px; line-height: 1.9; }
+.block-top { padding-top: 140px; }
+.quote { font-size: clamp(30px, 4vw, 58px); line-height: 1.4; letter-spacing: -0.035em; }
 
 /* ---------- 방법 4단계 ---------- */
 .method { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: 0 40px; }
@@ -140,6 +203,9 @@ body:not([data-page="home"]) main { padding-top: var(--head); }
 .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 72px 20px; }
 .item a { display: block; }
 .item-media { background: var(--stone); aspect-ratio: 4 / 5; overflow: hidden; margin-bottom: 18px; }
+.item .draw { stroke-width: 2.2; }
+.item .ax { stroke-width: 1.2; }
+.item .pt { r: 6px; }
 .art { width: 100%; height: 100%; transition: transform 1.6s var(--ease); }
 .item a:hover .art { transform: scale(1.04); }
 .item h3 { font-size: 16px; font-weight: 400; letter-spacing: -0.02em; margin-top: 8px; }
@@ -179,7 +245,7 @@ body:not([data-page="home"]) main { padding-top: var(--head); }
 .teacher { display: grid; grid-template-columns: 1fr 2fr; gap: 24px 40px; border-top: 1px solid var(--line); padding: 128px 0 0; margin: 0 var(--gutter) 128px; }
 .teacher .label { grid-row: 1 / span 2; }
 .teacher h2 { font-size: clamp(32px, 4vw, 56px); }
-.teacher-text { font-size: 18px; font-weight: 300; color: var(--ink-2); max-width: 560px; line-height: 1.8; }
+.teacher-text { font-size: 16px; font-weight: 300; color: var(--ink-2); max-width: 560px; line-height: 1.9; grid-column: 2; }
 
 /* ---------- 목록 (공지 등) ---------- */
 .list { list-style: none; margin: 0; padding: 0; }
@@ -310,6 +376,23 @@ aside .muted { margin-top: 12px; }
   .split-report .split-text { position: static; }
 }
 @media (max-width: 860px) {
+  .story { height: 560vh; }
+  .story-pin { grid-template-columns: 1fr; grid-template-rows: auto auto; align-content: center; gap: 22px; padding-top: calc(var(--head) + 12px); }
+  .story-stage { height: 50vh; order: -1; }
+  .card { inset: 5% 6%; padding: 22px 20px; gap: 14px; }
+  .prob { font-size: 15px; line-height: 1.85; }
+  .work { font-size: 18px; }
+  .story-text h2 { display: none; }
+  .story-text > .label { display: none; }
+  .story-steps { border-top: 0; }
+  .story-steps li { display: none; border: 0; padding: 0; }
+  .story[data-step="0"] li[data-i="1"], .story[data-step="1"] li[data-i="1"], .story[data-step="2"] li[data-i="2"], .story[data-step="3"] li[data-i="3"], .story[data-step="4"] li[data-i="4"], .story[data-step="5"] li[data-i="5"] { display: grid; opacity: 1; }
+  .story-steps h3 { font-size: 20px; font-family: var(--serif); font-weight: 300; }
+  .story-bar { margin-top: 18px; }
+  .note-dl div { grid-template-columns: 76px 1fr; padding: 11px 0; font-size: 13px; }
+  .anno { font-size: 13px; }
+  .card-comment { font-size: 13px; }
+  .teacher-text { grid-column: auto; }
   :root { --gutter: 20px; --head: 56px; }
   .nav, .nav-right { display: none; }
   .menu-btn, .mobile-cta { display: block; }
@@ -357,6 +440,7 @@ aside .muted { margin-top: 12px; }
   .lesson-now h2 { font-size: 22px; }
 }
 @media (prefers-reduced-motion: reduce) {
+  .pen path { stroke-dashoffset: 0; }
   *, *::before, *::after { animation-duration: .01ms !important; animation-delay: 0s !important; transition-duration: .01ms !important; transition-delay: 0s !important; }
   .reveal, .hero-in { opacity: 1; transform: none; }
   .draw { stroke-dashoffset: 0; }
