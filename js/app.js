@@ -160,8 +160,8 @@ function storySection() {
             <p class="ans">답 <span class="ans-num">${mx('9')}${redSlash()}</span></p>
           </div>
           <div class="anno">
-            <p><b>틀린 이유</b>‘서로 다른’ 두 실근이므로 등호가 들어가면 안 됩니다.</p>
-            <p><b>바른 풀이</b>${mx('9 − <i>k</i> &gt; 0')} 이므로 ${mx('<i>k</i> &lt; 9')}, 답은 ${mx('8')}</p>
+            <p><b>틀린 이유</b><span>‘서로 다른’ 두 실근이므로 등호가 들어가면 안 됩니다.</span></p>
+            <p><b>바른 풀이</b><span>${mx('9 − <i>k</i> &gt; 0')} 이므로 ${mx('<i>k</i> &lt; 9')}, 답은 ${mx('8')}</span></p>
           </div>
         </article>
         <article class="card" data-steps="3">
