@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f7f6f2">
+  <meta name="description" content="DHL MATH — 시험 분석부터 오답노트, 성적 보고서까지 이어지는 고등 수학 학습 공간">
+  <title>DHL MATH</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=Noto+Serif+KR:wght@600;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <a class="skip" href="#app">본문 바로가기</a>
+  <header class="topbar">
+    <div class="wrap topbar-inner">
+      <a class="brand" href="#/" aria-label="DHL MATH 홈">
+        <span class="brand-mark" aria-hidden="true">∑</span>
+        <span class="brand-text">DHL <b>MATH</b></span>
+      </a>
+      <nav class="nav" id="nav" aria-label="주요 메뉴">
+        <a href="#/courses" data-nav="courses">강좌</a>
+        <a href="#/system" data-nav="system">성적 관리</a>
+        <a href="#/notice" data-nav="notice">공지</a>
+        <a href="#/student" data-nav="student">학생</a>
+        <a href="#/parent" data-nav="parent">학부모</a>
+        <a href="#/consult" data-nav="consult" class="nav-cta">상담 신청</a>
+      </nav>
+      <button class="menu-btn" id="menuBtn" type="button" aria-label="메뉴 열기" aria-expanded="false" aria-controls="nav"><span></span><span></span></button>
+    </div>
+  </header>
+
+  <main id="app" tabindex="-1"></main>
+
+  <footer class="footer">
+    <div class="wrap footer-inner">
+      <div>
+        <div class="brand brand-foot"><span class="brand-mark" aria-hidden="true">∑</span><span class="brand-text">DHL <b>MATH</b></span></div>
+        <p class="footer-copy" id="footerInfo"></p>
+      </div>
+      <div class="footer-links">
+        <a href="#/courses">강좌</a>
+        <a href="#/system">성적 관리</a>
+        <a href="#/notice">공지</a>
+        <a href="#/consult">상담 신청</a>
+        <a href="#/admin" class="footer-admin">선생님 관리</a>
+      </div>
+    </div>
+    <div class="wrap footer-bottom">© <span id="year"></span> DHL MATH</div>
+  </footer>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="js/data.js"></script>
+  <script src="js/store.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
