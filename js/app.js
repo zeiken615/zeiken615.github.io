@@ -245,7 +245,18 @@ function viewHome() {
 function heroMath() {
   const P = (f, a, b, n = 120) => { let d = ''; for (let i = 0; i <= n; i++) { const [x, y] = f(a + (b - a) * i / n); d += `${i ? 'L' : 'M'}${x.toFixed(1)} ${y.toFixed(1)}`; } return d; };
   const lbl = (x, y, t) => `<text x="${x}" y="${y}" class="hm-lbl">${t}</text>`;
+  const chalk = [
+    ['c1', 'e<sup>iπ</sup> + 1 = 0', 0],
+    ['c2', '∑ 1/n² = π²/6', 3.5],
+    ['c3', 'a² + b² = c²', 7],
+    ['c4', 'x = (−b ± √(b² − 4ac)) / 2a', 1.8],
+    ['c5', 'lim<sub>x→0</sub> sin x / x = 1', 5.2],
+    ['c6', '∫<sub>0</sub><sup>1</sup> x² dx = 1/3', 9],
+    ['c7', '(e<sup>x</sup>)′ = e<sup>x</sup>', 11]
+  ];
   return `<div class="hm" id="hm" aria-hidden="true">
+    <svg width="0" height="0" style="position:absolute"><filter id="hmRough"><feTurbulence type="fractalNoise" baseFrequency="1.3" numOctaves="1" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="2.4"/></filter></svg>
+    <div class="hm-chalk">${chalk.map(([k, f, d]) => `<span class="hm-f ${k}" style="--d:${d}s">${f}</span>`).join('')}</div>
     <!-- 단위원 위를 도는 점이 사인 곡선을 그린다 -->
     <svg class="hm-g hm-wave" viewBox="0 0 900 300" style="--dx:-18px;--dy:-10px">
       ${line(30, 150, 270, 150, 'hm-ax')}${line(150, 30, 150, 270, 'hm-ax')}${line(290, 150, 900, 150, 'hm-ax')}
