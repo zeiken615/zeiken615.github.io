@@ -150,21 +150,12 @@ function viewHome() {
   return `
   <section class="hero">
     <div class="hero-center">
-      <p class="label hero-in" style="--d:.1s">High School Mathematics — ${esc(SITE.teacher)}</p>
+      <p class="label hero-in" style="--d:.1s">DHL MATH — High School Mathematics</p>
       <h1 class="hero-title"><span class="hero-in" style="--d:.25s">틀린 문제에는</span><span class="hero-in" style="--d:.42s">이유가 있습니다</span></h1>
       <p class="hero-sub hero-in" style="--d:.6s">시험 분석부터 오답노트, 학부모 보고서까지.<br>한 문제도 그냥 넘기지 않는 고등 수학.</p>
       <div class="hero-cta hero-in" style="--d:.75s"><a class="btn btn-light" href="#/consult">상담 신청하기</a><a class="text-link" href="#/system">관리 방식 보기</a></div>
     </div>
-    <div class="floats" aria-hidden="true">
-      <div class="float f1" data-depth="0.10"><div class="mini" style="--r:-4deg">
-        <header><span>채점</span><span>예시</span></header>${gradedProblem()}</div></div>
-      <div class="float f2" data-depth="0.18"><div class="mini" style="--r:3deg">
-        <header><span>문항별 정답률</span><span>예시</span></header>${rateBars()}<p class="mini-cap">정답률 50% 아래 · 8번, 11번, 12번</p></div></div>
-      <div class="float f3" data-depth="0.06"><div class="mini" style="--r:2.5deg">
-        <header><span>성적 보고서</span><span>예시</span></header>${miniLine()}<p class="mini-big">${first} → ${last}</p></div></div>
-      <div class="float f4" data-depth="0.14"><div class="mini" style="--r:-2deg">
-        <header><span>오답노트</span><span>예시</span></header>${noteRows()}</div></div>
-    </div>
+    ${heroMath()}
   </section>
 
   <section class="statement">
@@ -250,13 +241,88 @@ function viewHome() {
   </section>`;
 }
 
-/* 첫 화면 조각들이 스크롤에 따라 서로 다른 속도로 움직이기 */
-function heroParallax() {
-  if (reduceMotion || document.body.dataset.page !== 'home') return;
-  const y = window.scrollY;
-  if (y > window.innerHeight * 1.2) return;
-  document.querySelectorAll('.float').forEach(el => { el.style.transform = `translate3d(0, ${(-y * Number(el.dataset.depth)).toFixed(1)}px, 0)`; });
+/* 첫 화면 배경: 움직이는 수학 그래프 */
+function heroMath() {
+  const P = (f, a, b, n = 120) => { let d = ''; for (let i = 0; i <= n; i++) { const [x, y] = f(a + (b - a) * i / n); d += `${i ? 'L' : 'M'}${x.toFixed(1)} ${y.toFixed(1)}`; } return d; };
+  const lbl = (x, y, t) => `<text x="${x}" y="${y}" class="hm-lbl">${t}</text>`;
+  return `<div class="hm" id="hm" aria-hidden="true">
+    <!-- 단위원 위를 도는 점이 사인 곡선을 그린다 -->
+    <svg class="hm-g hm-wave" viewBox="0 0 900 300" style="--dx:-18px;--dy:-10px">
+      ${line(30, 150, 270, 150, 'hm-ax')}${line(150, 30, 150, 270, 'hm-ax')}${line(290, 150, 900, 150, 'hm-ax')}
+      <circle cx="150" cy="150" r="100" pathLength="1" class="hm-c hm-draw"/>
+      <line id="hmRad" class="hm-c hm-thin" x1="150" y1="150" x2="250" y2="150"/>
+      <line id="hmProj" class="hm-proj" x1="250" y1="150" x2="290" y2="150"/>
+      <path id="hmSin" class="hm-c hm-live" d=""/>
+      <circle id="hmP" r="5" class="hm-dot"/><circle id="hmQ" r="4" class="hm-dot"/>
+      ${lbl(40, 292, '<tspan class="it">x</tspan>² + <tspan class="it">y</tspan>² = 1')}${lbl(470, 40, '<tspan class="it">y</tspan> = sin <tspan class="it">x</tspan>')}
+    </svg>
+    <!-- 포물선 위를 움직이는 점과 접선 -->
+    <svg class="hm-g hm-para" viewBox="0 0 400 420" style="--dx:22px;--dy:12px">
+      ${line(20, 380, 380, 380, 'hm-ax')}${line(200, 400, 200, 30, 'hm-ax')}
+      <path d="${P(x => [200 + 100 * x, 380 - 100 * x * x], -1.8, 1.8)}" pathLength="1" class="hm-c hm-draw"/>
+      <line id="hmT1" class="hm-tan" x1="0" y1="0" x2="0" y2="0"/><circle id="hmD1" r="5" class="hm-dot"/>
+      ${lbl(300, 70, '<tspan class="it">y</tspan> = <tspan class="it">x</tspan>²')}
+    </svg>
+    <!-- 삼차함수 위를 움직이는 점과 접선 -->
+    <svg class="hm-g hm-cubic" viewBox="0 0 360 300" style="--dx:14px;--dy:-16px">
+      ${line(10, 150, 350, 150, 'hm-ax')}${line(180, 20, 180, 280, 'hm-ax')}
+      <path d="${P(x => [180 + 75 * x, 150 - 24 * (x ** 3 - 3 * x)], -2.1, 2.1)}" pathLength="1" class="hm-c hm-draw"/>
+      <line id="hmT2" class="hm-tan" x1="0" y1="0" x2="0" y2="0"/><circle id="hmD2" r="4.5" class="hm-dot"/>
+      ${lbl(200, 288, '<tspan class="it">y</tspan> = <tspan class="it">x</tspan>³ − 3<tspan class="it">x</tspan>')}
+    </svg>
+  </div>`;
 }
+
+/* 접선: 점 (X, Y)를 지나고 화면 기울기가 m인 선분 */
+function setTangent(el, X, Y, m, L) {
+  const k = L / Math.sqrt(1 + m * m);
+  el.setAttribute('x1', (X - k).toFixed(1)); el.setAttribute('y1', (Y - k * m).toFixed(1));
+  el.setAttribute('x2', (X + k).toFixed(1)); el.setAttribute('y2', (Y + k * m).toFixed(1));
+}
+
+function startHeroMath() {
+  const hm = document.getElementById('hm');
+  if (!hm) return;
+  const $ = id => document.getElementById(id);
+  const t0 = performance.now();
+  const draw = t => {
+    // 단위원: 각 θ, 점 P = (cos θ, sin θ). 오른쪽 곡선은 지나온 각의 사인 값
+    const th = t * 0.8;
+    const px = 150 + 100 * Math.cos(th), py = 150 - 100 * Math.sin(th);
+    $('hmRad').setAttribute('x2', px.toFixed(1)); $('hmRad').setAttribute('y2', py.toFixed(1));
+    $('hmProj').setAttribute('x1', px.toFixed(1)); $('hmProj').setAttribute('y1', py.toFixed(1)); $('hmProj').setAttribute('y2', py.toFixed(1));
+    $('hmP').setAttribute('cx', px.toFixed(1)); $('hmP').setAttribute('cy', py.toFixed(1));
+    $('hmQ').setAttribute('cx', 290); $('hmQ').setAttribute('cy', py.toFixed(1));
+    let d = '';
+    for (let x = 290; x <= 900; x += 5) d += `${x === 290 ? 'M' : 'L'}${x} ${(150 - 100 * Math.sin(th - (x - 290) / 100)).toFixed(1)}`;
+    $('hmSin').setAttribute('d', d);
+    // 포물선 y = x²: 점 a에서 접선 기울기 2a
+    const a = 1.45 * Math.sin(t * 0.55);
+    const X1 = 200 + 100 * a, Y1 = 380 - 100 * a * a;
+    setTangent($('hmT1'), X1, Y1, -2 * a, 130);
+    $('hmD1').setAttribute('cx', X1.toFixed(1)); $('hmD1').setAttribute('cy', Y1.toFixed(1));
+    // 삼차함수 y = x³ − 3x: 점 b에서 접선 기울기 3b² − 3
+    const b = 1.9 * Math.sin(t * 0.42 + 1);
+    const X2 = 180 + 75 * b, Y2 = 150 - 24 * (b ** 3 - 3 * b);
+    setTangent($('hmT2'), X2, Y2, -24 * (3 * b * b - 3) / 75, 90);
+    $('hmD2').setAttribute('cx', X2.toFixed(1)); $('hmD2').setAttribute('cy', Y2.toFixed(1));
+  };
+  if (reduceMotion) { draw(1.2); return; }
+  const loop = now => {
+    if (!document.body.contains(hm)) return;          // 다른 화면으로 가면 멈춤
+    draw((now - t0) / 1000);
+    requestAnimationFrame(loop);
+  };
+  requestAnimationFrame(loop);
+}
+
+/* 마우스를 따라 그래프가 살짝 움직이기 */
+window.addEventListener('pointermove', e => {
+  const hm = document.getElementById('hm');
+  if (!hm || reduceMotion || e.pointerType !== 'mouse') return;
+  hm.style.setProperty('--mx', (e.clientX / innerWidth - 0.5).toFixed(3));
+  hm.style.setProperty('--my', (e.clientY / innerHeight - 0.5).toFixed(3));
+}, { passive: true });
 
 /* 숫자가 올라가며 세어지기 */
 function countUp(el) {
@@ -591,7 +657,7 @@ const io = 'IntersectionObserver' in window && !reduceMotion
   : null;
 function watchReveals(root = app) {
   root.querySelectorAll('.countup').forEach(el => { el.addEventListener('count', () => countUp(el), { once: true }); if (!io) countUp(el); });
-  root.querySelectorAll('.reveal:not(.in), .item-media, .split-media, .sheet, .player-empty, .floats').forEach(el => io ? io.observe(el) : el.classList.add('in'));
+  root.querySelectorAll('.reveal:not(.in), .item-media, .split-media, .sheet, .player-empty').forEach(el => io ? io.observe(el) : el.classList.add('in'));
 }
 
 /* 한글 이름표는 자간을 좁게 */
@@ -616,10 +682,11 @@ function render(keepScroll = false) {
   };
   app.innerHTML = (views[r.page] || (() => viewNotFound()))();
   document.body.dataset.page = r.page;
-  if (keepScroll) app.querySelectorAll('.reveal, .item-media, .split-media, .sheet, .player-empty, .floats').forEach(el => el.classList.add('in'));
+  if (keepScroll) app.querySelectorAll('.reveal, .item-media, .split-media, .sheet, .player-empty').forEach(el => el.classList.add('in'));
   else { app.classList.remove('enter'); void app.offsetWidth; app.classList.add('enter'); }
   watchReveals();
   markKoreanLabels();
+  if (r.page === 'home') startHeroMath();
   const navKey = r.page === 'course' ? 'courses' : r.page;
   document.querySelectorAll('[data-nav]').forEach(a => a.classList.toggle('on', a.dataset.nav === navKey));
   setMenu(false);
@@ -638,7 +705,6 @@ function setMenu(open) {
 
 /* 첫 화면 위에서는 머리말을 투명하게 */
 function onScroll() {
-  heroParallax();
   const solid = window.scrollY > 10 || document.body.dataset.page !== 'home';
   const bar = document.getElementById('topbar');
   bar.classList.toggle('solid', solid);
