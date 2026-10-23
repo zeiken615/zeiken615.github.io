@@ -97,19 +97,6 @@ function artKey(c) {
 }
 const art = (key, label = '') => `<svg class="art" viewBox="0 0 400 500" role="img" aria-label="${esc(label)}"><g>${ARTS[key]()}</g></svg>`;
 
-/* 첫 화면 그림: 점수가 오르는 곡선 */
-function heroArt() {
-  const W = 1200, H = 640;
-  // 글자가 놓이는 왼쪽 아래를 비워 두고 오른쪽 위로만 그림
-  const f = x => [540 + x * 600, 380 - 280 / (1 + Math.exp(-8 * (x - 0.5)))];
-  const marks = [0.04, 0.24, 0.42, 0.58, 0.76, 0.96].map(f);
-  return `<svg class="hero-art" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
-    ${[100, 200, 300, 400].map(y => line(540, y, 1160, y, 'ax ax-faint')).join('')}${line(540, 400, 1160, 400)}
-    ${curve(pathOf(f, 0, 1, 200), 'hero-curve')}
-    ${marks.map(([x, y], i) => `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="5" class="pt" style="--d:${0.9 + i * 0.18}s"/>`).join('')}
-  </svg>`;
-}
-
 /* 점수 변화 그래프 (흑백) */
 function scoreChart(tests) {
   const w = 560, h = 300, padL = 36, padR = 40, padT = 30, padB = 40;
@@ -134,103 +121,50 @@ const redSlash = () => `<svg class="pen pen-slash" viewBox="0 0 60 60" aria-hidd
 const redCircle = () => `<svg class="pen pen-circle" viewBox="0 0 70 60" aria-hidden="true"><path d="M48 9 C28 2 6 12 6 31 C6 50 30 57 48 51 C64 45 67 25 55 13 C50 8 43 7 37 8" pathLength="1"/></svg>`;
 const mx = s => `<span class="math">${s}</span>`;
 
-function storySection() {
-  const steps = [
-    ['채점', '틀린 문제를 그냥 넘기지 않습니다. 답이 아니라 풀이 과정을 다시 봅니다.'],
-    ['분석', '계산이 아니라 문제의 조건 하나를 놓쳤습니다. 틀린 이유를 한 줄로 적어 둡니다.'],
-    ['변형 문제', '숫자와 식을 바꾼, 같은 원리의 문제를 다시 풀게 합니다. 외운 답인지 이해한 답인지 확인합니다.'],
-    ['오답노트', '틀린 이유, 기억할 점, 다시 푼 결과를 학생마다 한 장씩 남깁니다.'],
-    ['보고서', '이 과정이 쌓인 결과를 학부모님께 쉬운 말로 정리해 보내드립니다.']
-  ];
-  return `<section class="story" id="story" data-step="0" aria-label="틀린 문제 하나가 해결되기까지">
-    <div class="story-pin">
-      <div class="story-text">
-        <p class="label">One Wrong Answer</p>
-        <h2>틀린 문제 하나가<br>해결되기까지</h2>
-        <ol class="story-steps">${steps.map(([t, d], i) => `<li data-i="${i + 1}"><span class="num">${pad(i + 1)}</span><div><h3>${t}</h3><p>${d}</p></div></li>`).join('')}</ol>
-        <div class="story-bar" aria-hidden="true"><i></i></div>
-      </div>
-      <div class="story-stage">
-        <article class="card" data-steps="1 2">
-          <header><span class="label">공통수학1 · 이차방정식</span><span class="label">예시</span></header>
-          <p class="prob">이차방정식 ${mx('<i>x</i><sup>2</sup> − 6<i>x</i> + <i>k</i> = 0')} 이 <span class="hl">서로 다른</span> 두 실근을 갖도록 하는 정수 ${mx('<i>k</i>')}의 최댓값을 구하시오.</p>
-          <div class="work">
-            <p>${mx('9 − <i>k</i> <span class="mark-sign">≥</span> 0')}</p>
-            <p>${mx('<i>k</i> ≤ 9')}</p>
-            <p class="ans">답 <span class="ans-num">${mx('9')}${redSlash()}</span></p>
-          </div>
-          <div class="anno">
-            <p><b>틀린 이유</b><span>‘서로 다른’ 두 실근이므로 등호가 들어가면 안 됩니다.</span></p>
-            <p><b>바른 풀이</b><span>${mx('9 − <i>k</i> &gt; 0')} 이므로 ${mx('<i>k</i> &lt; 9')}, 답은 ${mx('8')}</span></p>
-          </div>
-        </article>
-        <article class="card" data-steps="3">
-          <header><span class="label">변형 문제 · 같은 원리, 다른 숫자</span><span class="label">예시</span></header>
-          <p class="prob">이차방정식 ${mx('<i>x</i><sup>2</sup> + 4<i>x</i> + <i>k</i> − 1 = 0')} 이 서로 다른 두 실근을 갖도록 하는 자연수 ${mx('<i>k</i>')}의 개수를 구하시오.</p>
-          <div class="work">
-            <p>${mx('4 − (<i>k</i> − 1) &gt; 0')}</p>
-            <p>${mx('<i>k</i> &lt; 5')}</p>
-            <p class="ans">답 <span class="ans-num">${mx('4')}${redCircle()}</span></p>
-          </div>
-        </article>
-        <article class="card" data-steps="4">
-          <header><span class="label">오답노트</span><span class="label">예시 학생</span></header>
-          <dl class="note-dl">
-            <div><dt>틀린 이유</dt><dd>‘서로 다른’이라는 조건을 놓쳐 등호를 넣었습니다.</dd></div>
-            <div><dt>기억할 것</dt><dd>‘서로 다른 두 실근’이면 등호를 넣지 않고, ‘실근을 갖는다’면 등호를 넣습니다.</dd></div>
-            <div><dt>다시 풀기</dt><dd class="retry"><span>원래 문제 <em class="x">틀림</em></span><span>변형 문제 <em class="o">맞음</em></span><span>일주일 뒤 <em>예정</em></span></dd></div>
-          </dl>
-        </article>
-        <article class="card" data-steps="5">
-          <header><span class="label">성적 보고서</span><span class="label">예시 학생 · 고2</span></header>
-          ${scoreChart(DEMO_STUDENT.tests)}
-          <p class="card-comment">이차방정식 단원에서 같은 원리의 변형 문제를 맞혔습니다. 문제의 조건을 끝까지 읽는 습관이 자리 잡고 있습니다.</p>
-        </article>
-      </div>
-    </div>
-  </section>`;
+/* 결과물 미리보기 조각들 (첫 화면과 관리 시스템 칸에서 함께 씀) */
+const SAMPLE_RATES = [92, 88, 85, 79, 81, 64, 70, 38, 72, 55, 31, 47];
+function rateBars(rates = SAMPLE_RATES, { labels = false } = {}) {
+  const w = 300, h = 120, gap = 6, bw = (w - gap * (rates.length - 1)) / rates.length;
+  return `<svg class="bars" viewBox="0 0 ${w} ${h + (labels ? 18 : 0)}" role="img" aria-label="문항별 정답률 예시: ${rates.map((r, i) => `${i + 1}번 ${r}%`).join(', ')}">
+    ${line(0, h, w, h)}
+    ${rates.map((r, i) => `<rect x="${(i * (bw + gap)).toFixed(1)}" y="${h - r * h / 100}" width="${bw.toFixed(1)}" height="${r * h / 100}" class="bar ${r < 50 ? 'bar-low' : ''}" style="--i:${i}"/>${labels ? `<text x="${(i * (bw + gap) + bw / 2).toFixed(1)}" y="${h + 14}" text-anchor="middle" class="tx">${i + 1}</text>` : ''}`).join('')}
+  </svg>`;
 }
-
-/* 스크롤 위치에 따라 이야기 단계 바꾸기 */
-function updateStory() {
-  const el = document.getElementById('story');
-  if (!el) return;
-  const r = el.getBoundingClientRect();
-  const total = el.offsetHeight - window.innerHeight;
-  const p = Math.min(Math.max(-r.top / total, 0), 0.9999);
-  const step = Math.floor(p * 5) + 1;
-  el.style.setProperty('--p', p.toFixed(4));
-  if (el.dataset.step !== String(step)) {
-    el.dataset.step = step;
-    el.querySelectorAll('.card').forEach(c => c.classList.toggle('in', c.dataset.steps.split(' ').includes(String(step))));
-  }
+function miniLine() {
+  const s = DEMO_STUDENT.tests.map(t => t.score);
+  const pts = s.map((v, i) => [10 + i * 56, 100 - (v - 50) * 1.8]);
+  return `<svg class="mini-line" viewBox="0 0 300 110" aria-hidden="true">${line(0, 100, 300, 100)}${curve('M' + pts.map(p => p.join(' ')).join('L'))}${pts.map(([x, y], i) => `<circle cx="${x}" cy="${y}" r="${i === pts.length - 1 ? 4.5 : 3}" class="pt ${i === pts.length - 1 ? '' : 'pt-open'}"/>`).join('')}</svg>`;
 }
-
-/* 숫자가 올라가며 세어지기 */
-function countUp(el) {
-  const from = Number(el.dataset.from), to = Number(el.dataset.to);
-  if (reduceMotion) { el.textContent = to; return; }
-  const start = performance.now(), dur = 1800;
-  const tick = now => {
-    const t = Math.min((now - start) / dur, 1);
-    el.textContent = Math.round(from + (to - from) * (1 - Math.pow(1 - t, 3)));
-    if (t < 1) requestAnimationFrame(tick);
-  };
-  requestAnimationFrame(tick);
-}
+const gradedProblem = (withWhy = true) => `
+  <p class="mini-prob">${mx('<i>x</i><sup>2</sup> − 6<i>x</i> + <i>k</i> = 0')} 이 서로 다른 두 실근을 갖도록 하는 정수 ${mx('<i>k</i>')}의 최댓값</p>
+  <div class="mini-work"><p>${mx('9 − <i>k</i> ≥ 0')}</p><p class="ans">답 <span class="ans-num">${mx('9')}${redSlash()}</span></p></div>
+  ${withWhy ? `<p class="mini-why"><b>틀린 이유</b> ‘서로 다른’인데 등호를 넣음</p>` : ''}`;
+const noteRows = () => `<ul class="mini-rows">
+  <li><span>이차방정식</span><em class="o">다시 풀어 맞음</em></li>
+  <li><span>삼각함수의 그래프</span><em class="x">다시 풀기 남음</em></li>
+  <li><span>수열의 합</span><em class="o">완료</em></li></ul>`;
 
 function viewHome() {
   const first = DEMO_STUDENT.tests[0].score, last = DEMO_STUDENT.tests.at(-1).score;
   const notices = state.notices.slice(0, 3);
   return `
   <section class="hero">
-    <div class="hero-media">${heroArt()}</div>
-    <div class="hero-text">
+    <div class="hero-center">
       <p class="label hero-in" style="--d:.1s">High School Mathematics — ${esc(SITE.teacher)}</p>
-      <h1 class="hero-title"><span class="hero-in" style="--d:.25s">틀린 문제에는</span><span class="hero-in" style="--d:.45s">이유가 있습니다</span></h1>
-      <a class="text-link hero-in" style="--d:.7s" href="#/consult">상담 신청하기</a>
+      <h1 class="hero-title"><span class="hero-in" style="--d:.25s">틀린 문제에는</span><span class="hero-in" style="--d:.42s">이유가 있습니다</span></h1>
+      <p class="hero-sub hero-in" style="--d:.6s">시험 분석부터 오답노트, 학부모 보고서까지.<br>한 문제도 그냥 넘기지 않는 고등 수학.</p>
+      <div class="hero-cta hero-in" style="--d:.75s"><a class="btn btn-light" href="#/consult">상담 신청하기</a><a class="text-link" href="#/system">관리 방식 보기</a></div>
     </div>
-    <p class="hero-caption hero-in" style="--d:1.4s">Scroll</p>
+    <div class="floats" aria-hidden="true">
+      <div class="float f1" data-depth="0.10"><div class="mini" style="--r:-4deg">
+        <header><span>채점</span><span>예시</span></header>${gradedProblem()}</div></div>
+      <div class="float f2" data-depth="0.18"><div class="mini" style="--r:3deg">
+        <header><span>문항별 정답률</span><span>예시</span></header>${rateBars()}<p class="mini-cap">정답률 50% 아래 · 8번, 11번, 12번</p></div></div>
+      <div class="float f3" data-depth="0.06"><div class="mini" style="--r:2.5deg">
+        <header><span>성적 보고서</span><span>예시</span></header>${miniLine()}<p class="mini-big">${first} → ${last}</p></div></div>
+      <div class="float f4" data-depth="0.14"><div class="mini" style="--r:-2deg">
+        <header><span>오답노트</span><span>예시</span></header>${noteRows()}</div></div>
+    </div>
   </section>
 
   <section class="statement">
@@ -238,7 +172,36 @@ function viewHome() {
     <p class="statement-text reveal">${esc(SITE.slogan)}</p>
   </section>
 
-  ${storySection()}
+  <section class="block bento-wrap">
+    <div class="block-head"><p class="label reveal">System</p><a class="text-link reveal" href="#/system">자세히 보기</a></div>
+    <h2 class="sec-title reveal">시험이 끝난 뒤부터<br>진짜 수업이 시작됩니다</h2>
+    <div class="bento">
+      <article class="tile t-a reveal">
+        <div class="tile-text"><span class="num">01</span><h3>문항별 시험 분석</h3><p>반 전체가 어려워한 문제와 학생 혼자 틀린 문제를 나눠서 봅니다.</p></div>
+        <div class="tile-visual">${rateBars(SAMPLE_RATES, { labels: true })}<p class="mini-cap">문항별 정답률 · 예시 — 50% 아래는 빨간색</p></div>
+      </article>
+      <article class="tile t-b reveal" style="--d:.08s">
+        <div class="tile-text"><span class="num">02</span><h3>빨간 펜 채점과 틀린 이유</h3><p>답이 아니라 풀이를 봅니다. 왜 틀렸는지 한 줄로 남깁니다.</p></div>
+        <div class="tile-visual paper">${gradedProblem()}</div>
+      </article>
+      <article class="tile t-c reveal">
+        <div class="tile-text"><span class="num">03</span><h3>같은 원리, 다른 숫자</h3><p>숫자와 식을 바꾼 변형 문제로 진짜 이해했는지 확인합니다.</p></div>
+        <div class="tile-visual paper variant">
+          <p>${mx('<i>x</i><sup>2</sup> − 6<i>x</i> + <i>k</i> = 0')}<small>원래 문제 · 틀림</small></p>
+          <span class="variant-arrow">↓</span>
+          <p>${mx('<i>x</i><sup>2</sup> + 4<i>x</i> + <i>k</i> − 1 = 0')}<small>변형 문제 · <span class="ans-num">${mx('맞음')}${redCircle()}</span></small></p>
+        </div>
+      </article>
+      <article class="tile t-d reveal" style="--d:.08s">
+        <div class="tile-text"><span class="num">04</span><h3>학생마다 한 장, 오답노트</h3><p>틀린 문제가 다르니 오답노트도 한 명씩 따로 만듭니다.</p></div>
+        <div class="tile-visual paper">${noteRows()}</div>
+      </article>
+      <article class="tile t-e reveal" style="--d:.16s">
+        <div class="tile-text"><span class="num">05</span><h3>학부모님께 드리는 보고서</h3><p>점수 변화와 다음 목표를 쉬운 말로 정리해 보내드립니다.</p></div>
+        <div class="tile-visual paper">${miniLine()}<p class="mini-cap">“계산 실수가 눈에 띄게 줄었습니다.” · 예시</p></div>
+      </article>
+    </div>
+  </section>
 
   <section class="dark">
     <p class="label reveal">One Student, One Semester — 예시</p>
@@ -246,9 +209,25 @@ function viewHome() {
     <p class="dark-cap reveal">3월 진단 ${first}점에서 9월 ${last}점까지.<br>가상의 학생으로 만든 예시입니다.</p>
   </section>
 
+  ${STATS.length ? `<section class="block block-top stats-wrap">
+    <div class="block-head"><p class="label reveal">In Numbers</p></div>
+    <div class="stats-row">${STATS.map(s => `<div class="reveal"><strong>${esc(s.value)}<small>${esc(s.unit || '')}</small></strong><span>${esc(s.label)}</span></div>`).join('')}</div>
+  </section>` : ''}
+
   <section class="block block-top">
     <div class="block-head"><p class="label reveal">Courses</p><a class="text-link reveal" href="#/courses">모든 강좌</a></div>
     <div class="grid">${state.courses.slice(0, 4).map(courseItem).join('')}</div>
+  </section>
+
+  ${REVIEWS.length ? `<section class="block reviews-wrap">
+    <div class="block-head"><p class="label reveal">Reviews</p></div>
+    <div class="reviews">${REVIEWS.map(r => `<figure class="review reveal"><blockquote>${esc(r.text)}</blockquote><figcaption>${esc(r.who)}${r.tag ? ` · ${esc(r.tag)}` : ''}</figcaption></figure>`).join('')}</div>
+  </section>` : ''}
+
+  <section class="block admission">
+    <div class="block-head"><p class="label reveal">First Visit</p><a class="text-link reveal" href="#/consult">상담 신청</a></div>
+    <h2 class="sec-title reveal">처음 오시는 분</h2>
+    <ol class="steps">${ADMISSION.map((s, i) => `<li class="reveal" style="--d:${i * 0.08}s"><span class="num">${pad(i + 1)}</span><h3>${esc(s.title)}</h3><p>${esc(s.desc)}</p></li>`).join('')}</ol>
   </section>
 
   <section class="block teacher">
@@ -269,6 +248,27 @@ function viewHome() {
     <h2 class="reveal">지금 성적에서 무엇이 막혀 있는지<br>함께 찾아보겠습니다</h2>
     <a class="btn reveal" href="#/consult">상담 신청하기</a>
   </section>`;
+}
+
+/* 첫 화면 조각들이 스크롤에 따라 서로 다른 속도로 움직이기 */
+function heroParallax() {
+  if (reduceMotion || document.body.dataset.page !== 'home') return;
+  const y = window.scrollY;
+  if (y > window.innerHeight * 1.2) return;
+  document.querySelectorAll('.float').forEach(el => { el.style.transform = `translate3d(0, ${(-y * Number(el.dataset.depth)).toFixed(1)}px, 0)`; });
+}
+
+/* 숫자가 올라가며 세어지기 */
+function countUp(el) {
+  const from = Number(el.dataset.from), to = Number(el.dataset.to);
+  if (reduceMotion) { el.textContent = to; return; }
+  const start = performance.now(), dur = 1800;
+  const tick = now => {
+    const t = Math.min((now - start) / dur, 1);
+    el.textContent = Math.round(from + (to - from) * (1 - Math.pow(1 - t, 3)));
+    if (t < 1) requestAnimationFrame(tick);
+  };
+  requestAnimationFrame(tick);
 }
 
 /* ---------- 성적 관리 ---------- */
@@ -591,7 +591,7 @@ const io = 'IntersectionObserver' in window && !reduceMotion
   : null;
 function watchReveals(root = app) {
   root.querySelectorAll('.countup').forEach(el => { el.addEventListener('count', () => countUp(el), { once: true }); if (!io) countUp(el); });
-  root.querySelectorAll('.reveal:not(.in), .item-media, .split-media, .sheet, .player-empty').forEach(el => io ? io.observe(el) : el.classList.add('in'));
+  root.querySelectorAll('.reveal:not(.in), .item-media, .split-media, .sheet, .player-empty, .floats').forEach(el => io ? io.observe(el) : el.classList.add('in'));
 }
 
 /* 한글 이름표는 자간을 좁게 */
@@ -616,7 +616,7 @@ function render(keepScroll = false) {
   };
   app.innerHTML = (views[r.page] || (() => viewNotFound()))();
   document.body.dataset.page = r.page;
-  if (keepScroll) app.querySelectorAll('.reveal, .item-media, .split-media, .sheet, .player-empty').forEach(el => el.classList.add('in'));
+  if (keepScroll) app.querySelectorAll('.reveal, .item-media, .split-media, .sheet, .player-empty, .floats').forEach(el => el.classList.add('in'));
   else { app.classList.remove('enter'); void app.offsetWidth; app.classList.add('enter'); }
   watchReveals();
   markKoreanLabels();
@@ -638,11 +638,13 @@ function setMenu(open) {
 
 /* 첫 화면 위에서는 머리말을 투명하게 */
 function onScroll() {
-  updateStory();
-  document.getElementById('topbar').classList.toggle('solid', window.scrollY > 10 || document.body.dataset.page !== 'home');
+  heroParallax();
+  const solid = window.scrollY > 10 || document.body.dataset.page !== 'home';
+  const bar = document.getElementById('topbar');
+  bar.classList.toggle('solid', solid);
+  bar.classList.toggle('on-dark', !solid);
 }
 window.addEventListener('scroll', onScroll, { passive: true });
-window.addEventListener('resize', updateStory);
 
 /* ---------- 이벤트 ---------- */
 document.addEventListener('click', e => {
